@@ -33,6 +33,14 @@ namespace EncryptionTool.Controllers
             return encryptedText;//Ok(encryptedText);
         }
 
+
+        [Route("api/encryptfun")]
+        public string Encryptfun([FromBody] DTOEncrypt dtoEncrypt)
+        {
+            var encryptedText = new Encryption().Encrypt(dtoEncrypt.PlainText, dtoEncrypt.Shift);
+            return encryptedText;//Ok(encryptedText);
+        }
+
         [HttpPost]
         [Route("api/decrypt")]
         public IHttpActionResult Decrypt([FromBody] DTODecrypt decrypt)
@@ -41,7 +49,13 @@ namespace EncryptionTool.Controllers
             return Ok(decryptedText);
         }
 
-
+        [HttpPost]
+        [Route("api/decryptfun")]
+        public IHttpActionResult Decryptfun([FromBody] DTODecrypt decrypt)
+        {
+            var decryptedText = new Encryption().Decrypt(decrypt.EncryptedText, decrypt.Shift);
+            return Ok(decryptedText);
+        }
         //// POST api/values
         //public void Post([FromBody]string value)
         //{
