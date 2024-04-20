@@ -1,1 +1,37 @@
 
+name: Deploy to AWS Elastic Beanstalk
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.x' # or '3.x' depending on your .NET version
+
+      - name: Build and Publish Application
+        run: |
+          dotnet build
+          dotnet publish -c Release -o ./publish
+
+      - name: Install AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to AWS Elastic Beanstalk
+        run: |
+          aws elasticbeanstalk create-application-version --application-name MyApp --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-us-west-2-123456789012,S3Key=my-app.zip
+          aws elasticbeanstalk update-environment --application-name MyApp --environment-name MyEnvironment --version-label v1
+
