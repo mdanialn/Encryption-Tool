@@ -28,7 +28,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
-
+ 
       - name: Deploy to AWS Elastic Beanstalk
         run: |
           aws elasticbeanstalk create-application-version --application-name MyApp --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-us-west-2-123456789012,S3Key=my-app.zip
