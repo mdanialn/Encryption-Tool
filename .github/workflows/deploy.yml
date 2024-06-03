@@ -7,16 +7,17 @@ on:
 
 jobs:
   deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v2
 
       - name: Install .NET SDK
-        uses: actions/setup-dotnet@v1
+        uses: actions/checkout@v2
+      - uses: action/setup-dotnet@v3
         with:
-          dotnet-version: '5.x' # or '3.x' depending on your .NET version
+          dotnet-version: '6.0.x'
 
       - name: Build and Publish Application
         run: |
