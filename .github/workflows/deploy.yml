@@ -18,10 +18,17 @@ jobs:
   
         with:
           dotnet-version: '6.0.x'
-
+          include-prerelease: true
+          
+      - name: Install required workloads
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dotnet-sdk-6.0
+          
       - name: Build and Publish Application
         run: |
           cd EncryptionTool
+          dotnet restore
           dotnet build
           dotnet publish -c Release -o ./publish
 
