@@ -16,13 +16,13 @@ jobs:
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '5.0.x'
           include-prerelease: true
           
       - name: Install required workloads
         run: |
           sudo apt-get update
-          sudo apt-get install -y dotnet-sdk-6.0
+          sudo apt-get install -y dotnet-sdk-5.0
       
       - name: Build and Publish Application
         run: |
