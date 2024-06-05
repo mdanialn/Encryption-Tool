@@ -8,15 +8,10 @@ on:
 jobs:
   deploy:
     name: Build & Deploy
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
-        
-      - name: Install Visual Studio 2022
-        uses: microsoft/setup-msbuild@v1
-        with:
-          vs-version: 2022
 
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v3
