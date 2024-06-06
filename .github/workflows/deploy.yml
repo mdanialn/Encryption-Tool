@@ -20,7 +20,7 @@ jobs:
         run: |
           choco install visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --includeRecommended --includeOptional --quiet --norestart"
           choco install visualstudio2017-workload-netweb --package-parameters "--includeRecommended --includeOptional --quiet --norestart"
-
+ 
       - name: Restore NuGet packages
         run: nuget restore EncryptionTool.sln
 
