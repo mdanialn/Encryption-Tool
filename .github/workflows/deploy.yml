@@ -25,18 +25,21 @@ jobs:
         run: nuget restore EncryptionTool.sln
 
       - name: Build Application
-        run: msbuild EncryptionTool.sln /p:Configuration=Release
+        run: |
+          msbuild EncryptionTool/EncryptionTool.csproj /p:Configuration=Release
 
       - name: Publish Application
-        run: msbuild EncryptionTool/EncryptionTool.csproj /t:Publish /p:Configuration=Release /p:PublishDir=publish
+        run: |
+          msbuild EncryptionTool/EncryptionTool.csproj /t:Publish /p:Configuration=Release /p:PublishDir=./EncryptionTool
 
       - name: Compress published files
         run: |
-          cd EncryptionTool/publish
+          cd EncryptionTool
           tar -czvf my-app.zip *
 
       - name: Install AWS CLI
-        run: msiexec /i https://awscli.amazonaws.com/AWSCLIV2.msi /quiet
+        run: |
+          msiexec /i https://awscli.amazonaws.com/AWSCLIV2.msi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -45,10 +48,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
-      - name: Upload to S3
-        run: aws s3 cp EncryptionTool/publish/my-app.zip s3://elasticbeanstalk-eu-north-1-471112929606/my-app.zip
-
       - name: Deploy to AWS Elastic Beanstalk
         run: |
+          aws s3 cp EncryptionTool/my-app.zip s3://elasticbeanstalk-eu-north-1-471112929606/my-app.zip
           aws elasticbeanstalk create-application-version --application-name MyApp --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-471112929606,S3Key=my-app.zip
           aws elasticbeanstalk update-environment --application-name MyApp --environment-name MyEnvironment --version-label v1
