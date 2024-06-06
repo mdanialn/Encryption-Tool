@@ -48,5 +48,5 @@ jobs:
 
       - name: Deploy to AWS Elastic Beanstalk
         run: |
-          aws elasticbeanstalk create-application-version --application-name MyApp --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-us-west-2-123456789012,S3Key=my-app.zip
+          aws elasticbeanstalk create-application-version --application-name MyApp --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-123456789012,S3Key=my-app.zip
           aws elasticbeanstalk update-environment --application-name MyApp --environment-name MyEnvironment --version-label v1
