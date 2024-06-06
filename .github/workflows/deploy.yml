@@ -22,7 +22,8 @@ jobs:
           choco install visualstudio2017-workload-netweb --package-parameters "--includeRecommended --includeOptional --quiet --norestart"
 
       - name: Restore NuGet packages
-        run: nuget restore EncryptionTool/EncryptionTool.sln
+        run: nuget restore EncryptionTool.sln
+
 
       - name: Build Application
         run: |
