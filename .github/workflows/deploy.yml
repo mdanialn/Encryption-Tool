@@ -20,7 +20,7 @@ jobs:
         run: |
           choco install visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --includeRecommended --includeOptional --quiet --norestart"
           choco install visualstudio2017-workload-netweb --package-parameters "--includeRecommended --includeOptional --quiet --norestart"
-
+ 
       - name: Restore NuGet packages
         run: nuget restore EncryptionTool.sln
 
@@ -35,15 +35,12 @@ jobs:
       - name: Compress published files
         run: |
           cd EncryptionTool/publish
-          tar -czvf ../my-app.zip *
+          tar -czvf my-app.zip *
 
       - name: Install AWS CLI
         run: |
           curl "https://awscli.amazonaws.com/AWSCLIV2.msi" -o "AWSCLIV2.msi"
-          msiexec /i AWSCLIV2.msi /quiet /norestart
-
-      - name: Verify AWS CLI Installation
-        run: aws --version
+          msiexec /i AWSCLIV2.msi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -57,8 +54,3 @@ jobs:
           aws s3 cp EncryptionTool/my-app.zip s3://elasticbeanstalk-eu-north-1-471112929606/my-app.zip
           aws elasticbeanstalk create-application-version --application-name MyApp --version-label ${{ github.sha }} --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-471112929606,S3Key=my-app.zip
           aws elasticbeanstalk update-environment --application-name MyApp --environment-name MyEnvironment --version-label ${{ github.sha }}
-
-      - name: Test Deployment
-        run: |
-          sleep 30 # wait for the environment to stabilize
-          curl -I MyEnvironment.eba-s3mcstsk.eu-north-1.elasticbeanstalk.com
