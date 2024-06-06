@@ -24,20 +24,19 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore EncryptionTool.sln
 
-
       - name: Build Application
-        run: |
-          cd EncryptionTool
-          msbuild /p:Configuration=Release
+        run: msbuild EncryptionTool.sln /p:Configuration=Release
 
       - name: Publish Application
+        run: msbuild EncryptionTool/EncryptionTool.csproj /t:Publish /p:Configuration=Release /p:PublishDir=publish
+
+      - name: Compress published files
         run: |
-          cd EncryptionTool
-          msbuild /t:Publish /p:Configuration=Release /p:PublishDir=./publish
+          cd EncryptionTool/publish
+          tar -czvf my-app.zip *
 
       - name: Install AWS CLI
-        run: |
-          msiexec /i https://awscli.amazonaws.com/AWSCLIV2.msi
+        run: msiexec /i https://awscli.amazonaws.com/AWSCLIV2.msi /quiet
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -45,6 +44,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
+
+      - name: Upload to S3
+        run: aws s3 cp EncryptionTool/publish/my-app.zip s3://elasticbeanstalk-eu-north-1-471112929606/my-app.zip
 
       - name: Deploy to AWS Elastic Beanstalk
         run: |
