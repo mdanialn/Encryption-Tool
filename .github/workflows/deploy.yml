@@ -2,42 +2,46 @@ name: Deploy to AWS Elastic Beanstalk
 
 on:
   push:
-    branches: 
-         - master 
+    branches:
+      - master
 
 jobs:
   deploy:
     name: Build & Deploy
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Install .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
-          include-prerelease: true
-          
-      - name: Install required workloads
+      - name: Set up .NET Framework
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Install .NET Framework Build Tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y dotnet-sdk-6.0
+          choco install visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --includeRecommended --includeOptional --quiet --norestart"
+          choco install visualstudio2017-workload-netweb --package-parameters "--includeRecommended --includeOptional --quiet --norestart"
       
-      - name: Build and Publish Application
+      - name: Build Application
         run: |
           cd EncryptionTool
-          dotnet restore
-          dotnet build
-          dotnet publish -c Release -o ./publish
+          msbuild /p:Configuration=Release
+
+      - name: Publish Application
+        run: |
+          cd EncryptionTool
+          msbuild /t:Publish /p:Configuration=Release /p:PublishDir=./publish
 
       - name: Install AWS CLI
+        run: |
+          msiexec /i https://awscli.amazonaws.com/AWSCLIV2.msi
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
-  
+
       - name: Deploy to AWS Elastic Beanstalk
         run: |
           aws elasticbeanstalk create-application-version --application-name MyApp --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-us-west-2-123456789012,S3Key=my-app.zip
